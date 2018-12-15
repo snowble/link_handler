@@ -3,7 +3,7 @@
 @implementation LinkHandlerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"link_handler"
+      methodChannelWithName:@"plugins.snowble.com/link_handler"
             binaryMessenger:[registrar messenger]];
   LinkHandlerPlugin* instance = [[LinkHandlerPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];

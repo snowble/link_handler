@@ -25,7 +25,7 @@ public class LinkHandlerPlugin implements MethodCallHandler, NewIntentListener {
   public static void registerWith(Registrar registrar) {
     LinkHandlerPlugin plugin = new LinkHandlerPlugin(registrar);
 
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "link_handler");
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.snowble.com/link_handler");
     channel.setMethodCallHandler(plugin);
 
     registrar.addNewIntentListener(plugin);
