@@ -2,12 +2,24 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-class LinkHandler {
-  static const MethodChannel _channel =
-      const MethodChannel('plugins.snowble.com/link_handler');
+const MethodChannel _channel =
+    const MethodChannel('plugins.snowble.com/link_handler');
+const EventChannel _eventChannel = EventChannel('plugins.snowble.com/links');
 
+class LinkHandler {
   static Future<String> get getLink async {
     final String version = await _channel.invokeMethod('getLink');
     return version;
+  }
+
+  Stream<String> _onNewLink;
+
+  Stream<String> get links {
+    if (_onNewLink == null) {
+      _onNewLink = _eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic link) => link.toString());
+    }
+    return _onNewLink;
   }
 }
