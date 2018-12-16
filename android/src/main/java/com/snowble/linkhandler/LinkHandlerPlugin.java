@@ -16,16 +16,13 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public class LinkHandlerPlugin implements MethodCallHandler, NewIntentListener, StreamHandler {
 
-  private String data;
+  private String link;
   private EventSink eventSink;
 
   private LinkHandlerPlugin(Registrar registrar) {
-    data = getData(registrar.activity().getIntent());
+    setLinkFromIntent(registrar.activity().getIntent());
   }
 
-  /**
-   * Plugin registration.
-   */
   public static void registerWith(Registrar registrar) {
     LinkHandlerPlugin plugin = new LinkHandlerPlugin(registrar);
 
@@ -43,7 +40,7 @@ public class LinkHandlerPlugin implements MethodCallHandler, NewIntentListener, 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     if (call.method.equals("getLink")) {
-      result.success(data);
+      result.success(link);
     } else {
       result.notImplemented();
     }
@@ -51,16 +48,30 @@ public class LinkHandlerPlugin implements MethodCallHandler, NewIntentListener, 
 
   @Override
   public boolean onNewIntent(Intent intent) {
-    data = getData(intent);
+    setLinkFromIntent(intent);
     if (eventSink != null) {
-      eventSink.success(data);
+      eventSink.success(link);
     }
     return false;
   }
 
-  private String getData(Intent intent) {
-    // FIXME return null if no data string
-    return intent.getDataString() == null ? "No data" : intent.getDataString();
+  private void setLinkFromIntent(Intent intent) {
+    if (intent.getAction() == null || !intent.getAction().equals(Intent.ACTION_VIEW)) {
+      link = null;
+      return;
+    }
+
+    if (!intent.hasCategory(Intent.CATEGORY_BROWSABLE)) {
+      link = null;
+      return;
+    }
+
+    if (intent.getDataString() == null || intent.getDataString().isEmpty()) {
+      link = null;
+      return;
+    }
+
+    link = intent.getDataString();
   }
 
   @Override
