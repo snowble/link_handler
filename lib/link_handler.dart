@@ -12,14 +12,14 @@ class LinkHandler {
     return version;
   }
 
-  Stream<String> _onNewLink;
+  Stream<String> _links;
 
   Stream<String> get links {
-    if (_onNewLink == null) {
-      _onNewLink = _eventChannel
+    if (_links == null) {
+      _links = _eventChannel
           .receiveBroadcastStream()
           .map((dynamic link) => link.toString());
     }
-    return _onNewLink;
+    return _links;
   }
 }
