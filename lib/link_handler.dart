@@ -7,8 +7,8 @@ const MethodChannel _channel =
 const EventChannel _eventChannel = EventChannel('plugins.snowble.com/links');
 
 class LinkHandler {
-  static Future<String> get getLink async {
-    final String version = await _channel.invokeMethod('getLink');
+  static Future<String> get getLastLink async {
+    final String version = await _channel.invokeMethod('getLastLink');
     return version;
   }
 

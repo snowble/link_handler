@@ -16,7 +16,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public class LinkHandlerPlugin implements MethodCallHandler, NewIntentListener, StreamHandler {
 
-  private String link;
+  private String lastLink;
   private EventSink eventSink;
 
   private LinkHandlerPlugin(Registrar registrar) {
@@ -39,8 +39,8 @@ public class LinkHandlerPlugin implements MethodCallHandler, NewIntentListener, 
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("getLink")) {
-      result.success(link);
+    if (call.method.equals("getLastLink")) {
+      result.success(lastLink);
     } else {
       result.notImplemented();
     }
@@ -50,28 +50,28 @@ public class LinkHandlerPlugin implements MethodCallHandler, NewIntentListener, 
   public boolean onNewIntent(Intent intent) {
     setLinkFromIntent(intent);
     if (eventSink != null) {
-      eventSink.success(link);
+      eventSink.success(lastLink);
     }
     return false;
   }
 
   private void setLinkFromIntent(Intent intent) {
     if (intent.getAction() == null || !intent.getAction().equals(Intent.ACTION_VIEW)) {
-      link = null;
+      lastLink = null;
       return;
     }
 
     if (!intent.hasCategory(Intent.CATEGORY_BROWSABLE)) {
-      link = null;
+      lastLink = null;
       return;
     }
 
     if (intent.getDataString() == null || intent.getDataString().isEmpty()) {
-      link = null;
+      lastLink = null;
       return;
     }
 
-    link = intent.getDataString();
+    lastLink = intent.getDataString();
   }
 
   @Override

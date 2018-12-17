@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
     String link;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      link = await LinkHandler.getLink;
+      link = await LinkHandler.getLastLink;
     } on PlatformException {
       link = 'Failed to get link.';
     }
