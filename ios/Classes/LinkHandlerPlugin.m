@@ -1,6 +1,7 @@
 #import "LinkHandlerPlugin.h"
 
 @interface LinkHandlerPlugin () <FlutterStreamHandler>
+@property(nonatomic, copy) NSString *lastLink;
 @end
 
 @implementation LinkHandlerPlugin  {
@@ -18,14 +19,32 @@
     [FlutterEventChannel eventChannelWithName:@"plugins.snowble.com/links"
                               binaryMessenger:[registrar messenger]];
     [streamChannel setStreamHandler:instance];
+
+    [registrar addApplicationDelegate:instance];
+}
+
+- (void)setLastLink:(NSString *)lastLink {
+    _lastLink = [lastLink copy];
+
+    if (_eventSink) _eventSink(_lastLink);
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"getLastLink" isEqualToString:call.method]) {
-        result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+        result(self.lastLink);
     } else {
         result(FlutterMethodNotImplemented);
     }
+}
+
+- (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray *_Nullable))restorationHandler {
+    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        self.lastLink = [userActivity.webpageURL absoluteString];
+        return YES;
+    }
+    return NO;
 }
 
 #pragma mark FlutterStreamHandler impl
@@ -36,6 +55,7 @@
 }
 
 - (FlutterError*)onCancelWithArguments:(id)arguments {
+    _eventSink = nil;
     return nil;
 }
 
